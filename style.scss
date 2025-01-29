@@ -1,0 +1,210 @@
+// https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
+
+//catppuccin mocha
+$base: #1e1e2e;
+$text: #cdd6f4;
+$pink: #f5c2e7;
+$mauve: #cba6f7;
+$red: #f38ba8;
+$maroon: #eba0ac;
+$peach: #fab387;
+$yellow: #f9e2af;
+$green: #a6e3a1;
+$teal: #94e2d5;
+$sky: #89dceb;
+$sapphire: #74c7ec;
+$blue: #89b4fa;
+$lavender: #b4befe;
+$text: #cdd6f4;
+$subtext1: #bac2de;
+$subtext0: #a6adc8;
+$overlay2: #9399b2;
+$overlay1: #7f849c;
+$overlay0: #6c7086;
+$surface2: #585b70;
+$surface1: #45475a;
+$surface0: #313244;
+$base: #1e1e2e;
+$mantle: #181825;
+$crust: #11111b;
+
+window.Bar {
+
+  &* {
+    all: unset;
+    background: transparent;
+  }
+
+  background: $crust;
+  color: $text;
+
+  .workspaces {
+
+    .workspace {
+      background: $surface0;
+      padding: 0.0rem 0.4rem;
+
+      * {
+        padding: 0rem 0.2rem;
+      }
+    }
+
+    .workspace.focused-workspace {
+      background: $surface2;
+    }
+
+    .client {
+      border-top: 0.1rem solid transparent;
+    }
+
+    .client.focused-client {
+      border-top: 0.1rem solid $green;
+    }
+  }
+
+  .clock {
+    font-weight: bold;
+  }
+
+  .battery {
+    &.critical {
+      color: $red;
+
+      levelbar trough block.filled {
+        background-color: $red;
+      }
+    }
+
+    &.charging,
+    &.high {
+      color: $green;
+
+      levelbar trough block.filled {
+        background-color: $green;
+      }
+    }
+  }
+
+  .audio-icon.muted {
+    color: $red;
+  }
+}
+
+window.BatteryMenu,
+window.AudioMenu,
+window.BluetoothMenu {
+  * {
+    all: unset;
+    background: transparent;
+  }
+
+  .header {
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+
+  .subheader {
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+
+  .subsubheader {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  .menu-main-body {
+    padding: 1rem;
+    margin: 0.5rem;
+    background: $crust;
+    border-radius: 1rem;
+  }
+
+  .subsection {
+    padding: 0.5rem;
+    margin: 0.25rem;
+    background: $mantle;
+    border-radius: 1rem;
+  }
+
+  .subsubsection {
+    padding: 0.25rem;
+    margin: 0.125rem;
+    background: $base;
+    border-radius: 0.5rem;
+  }
+
+  .device-icon {
+    padding: 0rem 1rem;
+  }
+
+  .power-profiles-icon {
+    padding-right: 1rem;
+    &.power-saver {
+      color: $green;
+    }
+    &.performance {
+      color: $peach;
+    }
+  }
+
+  .slider {
+      trough  {
+        padding: 0rem 1rem;
+        background: $surface0;
+        border-radius: 0.5rem;
+      }
+
+      highlight {
+        margin-left: -1rem;
+        padding-left: 1rem;
+        border-radius: 0.5rem;
+        background: $surface2;
+      }
+
+      slider {
+        background: $blue;
+        border-radius: 0.5rem;
+        min-width: 2rem;
+        min-height: 1rem;
+
+        &:active {
+          background: $sky;
+        }
+    }
+  }
+
+  .switch {
+    color: $text;
+    background: $surface1;
+    border-radius: 1rem;
+    &:checked {
+      background: $surface2;
+    }
+    slider {
+      background: $blue;
+      border-radius: 1rem;
+      min-width: 2rem;
+      min-height: 0.5rem;
+    }
+  }
+
+  .levelbar {
+
+      trough  {
+        min-height: 1rem;
+        border-radius: 0.5rem;
+      }
+    
+      block.empty {
+        background: $surface0;
+        border-radius: 0.5rem;
+      }
+
+      block.filled {
+        background: $surface2;
+        border-radius: 0.5rem;
+      }
+  }
+}
+
