@@ -3,6 +3,8 @@ import PowerProfiles from "gi://AstalPowerProfiles"
 import { App, Astal, Gtk } from "astal/gtk3"
 import { Variable, bind } from "astal"
 import { LevelBar } from "astal/gtk3/widget"
+import StatusIcon from "./StatusIcon"
+import { Header, MainArea, Section } from "./popupMenu"
 
 const battery = Battery.get_default()
 const power_profiles = PowerProfiles.get_default()
@@ -37,11 +39,12 @@ function BatteryWindowToggle() {
         let hours = Math.floor(eta / 60 / 60)
         let minutes = (Math.floor((eta / 60) % 60))
 
-        return (<box vertical className={"subsection"}>
+        return (<Section>
+            <Header title="Status" />
             <label label={`${charging_text} at ${percentage_int}%`} />
             <LevelBar className="levelbar" max_value={1} min_value={0} value={percentage} />
             <label label={`${charging ? "Full" : "Empty"} in ~${hours}h${minutes} m`} />
-        </box>)
+        </Section>)
     })
 
     return <window
@@ -55,29 +58,26 @@ function BatteryWindowToggle() {
         <eventbox on_hover_lost={() => {
             BatteryWindowToggle()
         }} >
-
-            <box vertical className={"menu-main-body"}>
-                <label label="Battery" className="header" />
-                <box vertical className={"subsection"}>
-                    <label label="Status" className="subheader" />
-                    {bind(status_subsection)}
-                </box>
-                <box vertical className={"subsection"}>
+            <MainArea>
+                <Header title="Battery" />
+                {bind(status_subsection)}
+                <Section>
                     <button onClicked={cycleProfiles}
                         className={bind(power_profiles, "active_profile")}>
                         <box>
                             <icon
-                                icon={bind(power_profiles, "icon_name")} css={"font-size: 3rem;"}
+                                icon={bind(power_profiles, "icon_name")} 
+                                css={"font-size: 3rem;"}
                                 className={bind(power_profiles, "active_profile").as(active_profile =>
                                     ["power-profiles-icon", active_profile].join(" "))} />
                             <box vertical valign={Gtk.Align.CENTER}>
-                                <label label={"Power profile"} className={"subheader"} />
+                                <Header title={"Power profile"} />
                                 <label label={bind(power_profiles, "activeProfile")} />
                             </box>
                         </box>
                     </button>
-                </box>
-            </box>
+                </Section>
+            </MainArea>
         </eventbox>
     </window>
 }
@@ -99,21 +99,37 @@ export default function BatteryIcon(): JSX.Element {
             `${charging ? "Full" : "Empty"} in ~${hours}h${minutes}m`
     })
 
-    const thresholds = [{ v: 0.1, c: "critical" }, { v: 0.2, c: "low" }, { v: 0.9, c: "" }, { v: 100, c: "high" }]
+    const thresholds = [
+        { v: 0.1, c: "critical" },
+        { v: 0.2, c: "low" },
+        { v: 0.9, c: "" },
+        { v: 100, c: "high" }
+    ]
 
-    const classes = Variable.derive([bind(battery, "percentage"), bind(battery, "charging")], (percentage, charging) => [
+    const classes = Variable.derive([
+        bind(battery, "percentage"),
+        bind(battery, "charging")
+    ], (percentage, charging) => [
         "battery",
         charging ? "charging" : "discharging",
         (thresholds.find((threshold) => threshold.v >= percentage) || { c: "" }).c
     ].join(" "))
 
-    const icon = Variable.derive([bind(battery, "percentage"), bind(battery, "charging")], (percentage, charging) => {
+    const icon = Variable.derive([
+        bind(battery, "percentage"),
+        bind(battery, "charging")
+    ], (percentage, charging) => {
         let percentage_int = Math.floor((percentage * 100) / 10) * 10
-        return `battery-${percentage_int == 100 ? "full" : `level-${percentage_int}`}-${percentage_int < 100 && charging ? "charging-" : ""}symbolic`
+        return `battery-${percentage_int == 100 ? "full" : `level-${percentage_int}`
+            }-${percentage_int < 100 && charging ? "charging-" : ""}symbolic`
     })
 
-    return <button className={bind(classes)} onClicked={BatteryWindowToggle} >
-        <icon icon={bind(icon)} tooltipMarkup={bind(tooltip)} />
-    </button>
+
+    return <StatusIcon
+        className={bind(classes)}
+        icon_name={bind(icon)}
+        tooltip={bind(tooltip)}
+        on_click={BatteryWindowToggle}
+    />
 }
 

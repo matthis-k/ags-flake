@@ -8,7 +8,7 @@
         "moduleResolution": "Bundler",
         // "checkJs": true,
         // "allowJs": true,
-        "jsx": "react-jsx",
+        "jsx": "react",
         "jsxImportSource": "astal/gtk3",
     }
 }

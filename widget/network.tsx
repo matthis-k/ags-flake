@@ -1,5 +1,6 @@
 import { Variable, bind } from "astal"
 import Network from "gi://AstalNetwork"
+import StatusIcon from "./StatusIcon"
 
 
 export default function NetworkIcon() {
@@ -28,9 +29,10 @@ export default function NetworkIcon() {
     })
 
     // TODO add clicking stuff (connect/disconnect)
-    return <box>
-        <icon icon={bind(icon)} tooltipMarkup={bind(tooltip)} />
-    </box>
+    return <StatusIcon
+        icon_name={bind(icon)}
+        tooltip={bind(tooltip)}
+    />
 }
 
 

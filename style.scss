@@ -30,13 +30,14 @@ $crust: #11111b;
 
 window.Bar {
 
-  &* {
+  background: $crust;
+  color: $text;
+
+  * {
     all: unset;
     background: transparent;
   }
 
-  background: $crust;
-  color: $text;
 
   .workspaces {
 
@@ -98,40 +99,40 @@ window.BluetoothMenu {
     background: transparent;
   }
 
-  .header {
-    font-size: 1.8rem;
-    font-weight: bold;
-  }
-
-  .subheader {
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
-
-  .subsubheader {
-    font-size: 1rem;
-    font-weight: bold;
-  }
-
-  .menu-main-body {
+  .mainArea {
     padding: 1rem;
     margin: 0.5rem;
     background: $crust;
     border-radius: 1rem;
-  }
 
-  .subsection {
-    padding: 0.5rem;
-    margin: 0.25rem;
-    background: $mantle;
-    border-radius: 1rem;
-  }
+    .header {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
 
-  .subsubsection {
-    padding: 0.25rem;
-    margin: 0.125rem;
-    background: $base;
-    border-radius: 0.5rem;
+    .section {
+      padding: 0.5rem;
+      margin: 0.25rem;
+      background: $mantle;
+      border-radius: 1rem;
+
+      .header {
+        font-size: 1.4rem;
+        font-weight: bold;
+      }
+
+      .section {
+        padding: 0.25rem;
+        margin: 0.125rem;
+        background: $base;
+        border-radius: 0.5rem;
+
+        .header {
+          font-size: 1rem;
+          font-weight: bold;
+        }
+      }
+    }
   }
 
   .device-icon {
@@ -140,37 +141,39 @@ window.BluetoothMenu {
 
   .power-profiles-icon {
     padding-right: 1rem;
+
     &.power-saver {
       color: $green;
     }
+
     &.performance {
       color: $peach;
     }
   }
 
   .slider {
-      trough  {
-        padding: 0rem 1rem;
-        background: $surface0;
-        border-radius: 0.5rem;
+    trough {
+      padding: 0rem 1rem;
+      background: $surface0;
+      border-radius: 0.5rem;
+    }
+
+    highlight {
+      margin-left: -1rem;
+      padding-left: 1rem;
+      border-radius: 0.5rem;
+      background: $surface2;
+    }
+
+    slider {
+      background: $blue;
+      border-radius: 0.5rem;
+      min-width: 2rem;
+      min-height: 1rem;
+
+      &:active {
+        background: $sky;
       }
-
-      highlight {
-        margin-left: -1rem;
-        padding-left: 1rem;
-        border-radius: 0.5rem;
-        background: $surface2;
-      }
-
-      slider {
-        background: $blue;
-        border-radius: 0.5rem;
-        min-width: 2rem;
-        min-height: 1rem;
-
-        &:active {
-          background: $sky;
-        }
     }
   }
 
@@ -178,9 +181,11 @@ window.BluetoothMenu {
     color: $text;
     background: $surface1;
     border-radius: 1rem;
+
     &:checked {
       background: $surface2;
     }
+
     slider {
       background: $blue;
       border-radius: 1rem;
@@ -191,20 +196,19 @@ window.BluetoothMenu {
 
   .levelbar {
 
-      trough  {
-        min-height: 1rem;
-        border-radius: 0.5rem;
-      }
-    
-      block.empty {
-        background: $surface0;
-        border-radius: 0.5rem;
-      }
+    trough {
+      min-height: 1rem;
+      border-radius: 0.5rem;
+    }
 
-      block.filled {
-        background: $surface2;
-        border-radius: 0.5rem;
-      }
+    block.empty {
+      background: $surface0;
+      border-radius: 0.5rem;
+    }
+
+    block.filled {
+      background: $surface2;
+      border-radius: 0.5rem;
+    }
   }
 }
-

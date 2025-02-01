@@ -1,16 +1,18 @@
 import Wp from "gi://AstalWp"
 import { App, Astal, Gtk } from "astal/gtk3"
 import { Variable, bind } from "astal"
+import StatusIcon from "./StatusIcon"
+import { Header, MainArea, Section } from "./popupMenu"
 const wp = Wp.get_default()
 
 function on_scroll(endpoint: Wp.Endpoint | null) {
     if (!endpoint) { return () => undefined }
     return (_: any, { delta_y }: { delta_y: number }) => {
         if (delta_y < 0) {
-            endpoint?.set_volume(endpoint.volume - 0.05);
+            endpoint?.set_volume(Math.max(0, endpoint.volume - 0.05));
             endpoint?.set_mute(false);
         } else {
-            endpoint?.set_volume(endpoint.volume + 0.05);
+            endpoint?.set_volume(Math.min(1.0, endpoint.volume + 0.05));
             endpoint?.set_mute(false);
         }
     }
@@ -48,7 +50,7 @@ function AudioWindowToggle() {
                                     className="slider"
                                     drawValue={false}
                                     min={0}
-                                    max={props.overamp ? 1.5 : 1}
+                                    max={1}
                                     value={volume}
                                     onDragged={({ value, dragging }) => {
                                         if (dragging) {
@@ -64,39 +66,39 @@ function AudioWindowToggle() {
         }
 
         let speakers_content = Variable.derive([speakers], speakers => {
-            return <box vertical className={"subsection"}>
-                <box><label label={"Speakers"} className={"header"} /></box>
+            return <Section>
+                <Header title="Speakers" />
                 {speakers.length <= 0
                     ? <label label={"No speakers found"} />
-                    : speakers.map(speaker => <Endpoint endpoint={speaker} overamp />)}
-            </box >
+                    : speakers.map(speaker => <Endpoint endpoint={speaker} />)}
+            </Section >
         })
 
         let microphones_content = Variable.derive([microphones], microphones => {
-            return <box vertical className={"subsection"}>
-                <box><label label={"Microphones"} className={"header"} /></box>
+            return <Section>
+                <Header title="Microphones" />
                 {microphones.length <= 0
                     ? <label label={"No microphones found"} />
                     : microphones.map(mic => <Endpoint endpoint={mic} />)}
-            </box>
+            </Section>
         })
 
         let streams_content = Variable.derive([streams], streams => {
-            <box vertical className={"subsection"} >
-                <box><label label={"Streams"} className={"header"} /></box>
+            <Section>
+                <Header title="Streams" />
                 {streams.length <= 0
                     ? <label label={"No active audio streams"} />
                     : streams.map(stream => <Endpoint endpoint={stream} show_name={true} />)}
-            </box >
+            </Section >
         })
 
         content = Variable.derive([speakers_content, microphones_content, streams_content],
             (speakers_content, microphones_content, streams_content) => {
-                return <box vertical>
+                return <MainArea>
                     {speakers_content}
                     {microphones_content}
                     {streams_content}
-                </box>
+                </MainArea >
             })
     }
 
@@ -115,9 +117,7 @@ function AudioWindowToggle() {
         <eventbox on_hover_lost={() => {
             AudioWindowToggle()
         }} >
-            <box className="menu-main-body" vertical>
-                {bind(content)}
-            </box>
+            {bind(content)}
         </eventbox>
     </window>)
 }
@@ -129,13 +129,13 @@ export default function AudioIcon() {
     }
 
     const tooltip = bind(wp.audio.default_speaker, "volume").as(volume => `Volume at ${Math.floor(volume * 100)}%`)
-    const icon = bind(wp.audio.default_speaker, "volume_icon").as(icon => (<icon
-        className={bind(wp.audio.default_speaker, "mute").as(muted => [`${muted ? "muted" : ""}`, "audio-icon"].join(" "))}
-        icon={icon}
-        tooltipMarkup={tooltip}
-    />))
+    const icon = bind(wp.audio.default_speaker, "volume_icon")
+    const classes = bind(wp.audio.default_speaker, "mute").as(muted => [`${muted ? "muted" : ""}`, "audio-icon"].join(" "))
 
-    return <button onClicked={AudioWindowToggle} onScroll={on_scroll(wp?.audio?.get_default_speaker())}>
-        {icon}
-    </button>
+    return <StatusIcon
+        tooltip={tooltip}
+        on_click={AudioWindowToggle}
+        on_scroll={on_scroll(wp?.audio?.get_default_speaker())}
+        icon_name={bind(icon)}
+    />
 }
