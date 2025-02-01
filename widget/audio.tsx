@@ -52,11 +52,9 @@ function AudioWindowToggle() {
                                     min={0}
                                     max={1}
                                     value={volume}
-                                    onDragged={({ value, dragging }) => {
-                                        if (dragging) {
-                                            ep?.set_volume(value);
-                                            ep?.set_mute(false);
-                                        }
+                                    onDragged={({ value }) => {
+                                        ep?.set_volume(value);
+                                        ep?.set_mute(false);
                                     }} />
                             </box>
                         </eventbox>
