@@ -2,7 +2,7 @@ import { App, Astal, Gtk } from "astal/gtk3"
 import { Variable, bind, timeout } from "astal"
 import Bluetooth from "gi://AstalBluetooth"
 import StatusIcon from "./StatusIcon"
-import { Header, MainArea, Section } from "./popupMenu"
+import { Header, MainArea, Section } from "./semanticTags"
 
 const bt = Bluetooth.get_default()
 
@@ -22,7 +22,7 @@ function BluetoothWindowToggle() {
         const revealed = Variable(false)
         return <eventbox on_hover={() => revealed.set(true)}
             on_hover_lost={() => revealed.set(false)}>
-            <Section horizontal>
+            <Section vertical={false}>
                 <box>
                     <icon icon={bind(dev, "icon")} className="device-icon" />
                     <label label={bind(Variable.derive([bind(dev, "name"), bind(dev, "address")], (name, adr) => name.length > 0 ? name : adr))} />

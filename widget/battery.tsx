@@ -4,7 +4,7 @@ import { App, Astal, Gtk } from "astal/gtk3"
 import { Variable, bind } from "astal"
 import { LevelBar } from "astal/gtk3/widget"
 import StatusIcon from "./StatusIcon"
-import { Header, MainArea, Section } from "./popupMenu"
+import { Header, MainArea, Section } from "./semanticTags"
 
 const battery = Battery.get_default()
 const power_profiles = PowerProfiles.get_default()

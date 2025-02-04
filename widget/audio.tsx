@@ -2,7 +2,7 @@ import Wp from "gi://AstalWp"
 import { App, Astal, Gtk } from "astal/gtk3"
 import { Variable, bind } from "astal"
 import StatusIcon from "./StatusIcon"
-import { Header, MainArea, Section } from "./popupMenu"
+import { Header, MainArea, Section } from "./semanticTags"
 const wp = Wp.get_default()
 
 function on_scroll(endpoint: Wp.Endpoint | null) {
