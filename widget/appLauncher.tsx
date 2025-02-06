@@ -72,7 +72,7 @@ export default function Applauncher() {
 
     return <window
         name="launcher"
-        className="Launcher"
+        className="hyprshell-launcher"
         anchor={Astal.WindowAnchor.TOP}
         exclusivity={Astal.Exclusivity.IGNORE}
         keymode={Astal.Keymode.EXCLUSIVE}
