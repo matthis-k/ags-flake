@@ -6,7 +6,7 @@ export default function Wallpaper(gdkmonitor: Gdk.Monitor): Gtk.Widget {
     return <window
         className="Wallpaper"
         gdkmonitor={gdkmonitor}
-        layer={Astal.Layer.BACKGROUND}
+        layer={Astal.Layer.BOTTOM}
         exclusivity={Astal.Exclusivity.IGNORE}
         anchor={Astal.WindowAnchor.TOP
             | Astal.WindowAnchor.LEFT

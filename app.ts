@@ -10,7 +10,7 @@ App.start({
     css: style,
     main() {
         App.get_monitors().map(Bar)
-        App.get_monitors().map(Wallpaper)
+        // App.get_monitors().map(Wallpaper)
     },
     requestHandler(request: string, res: (response: any) => void) {
         if (request == "launcher") {
