@@ -73,7 +73,7 @@ export default function Applauncher() {
     return <window
         name="launcher"
         className="hyprshell-launcher"
-        anchor={Astal.WindowAnchor.TOP}
+        anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT}
         exclusivity={Astal.Exclusivity.IGNORE}
         keymode={Astal.Keymode.EXCLUSIVE}
         application={App}
@@ -86,35 +86,42 @@ export default function Applauncher() {
             if (event.get_keyval()[1] === Gdk.KEY_Escape)
                 self.hide()
         }}>
-        <MainArea>
-            <box width_request={width(w => w / 2)} vertical spacing={12} halign={CENTER} valign={START} >
-                <Section height_request={50} halign={CENTER}>
-                    <entry
-                        placeholderText="Search"
-                        text={text()}
-                        onChanged={self => text.set(self.text)}
-                        onActivate={onEnter}
-                    />
-                </Section>
-                <FlowBox
-                    column_spacing={6}
-                    row_spacing={6}
-                    max_children_per_line={6}
-                    homogeneous
-                    hexpand={false}
-                    vexpand={false}
-                    halign={CENTER}
-                >
-                    {list.as(list => list.map(app => (
-                        <AppButton app={app} />
-                    )))}
-                </FlowBox>
-                <box halign={CENTER} className="not-found" vertical
-                    visible={list.as(l => l.length === 0)}>
-                    <icon icon="system-search-symbolic" />
-                    <label label="No match found" />
-                </box>
+        <box>
+            <eventbox vexpand hexpand on_click={hide} />
+            <box hexpand vexpand vertical>
+                <MainArea>
+                    <box width_request={width(w => w / 2)} vertical spacing={12} halign={CENTER} valign={START} >
+                        <Section height_request={50} width_request={300} halign={CENTER} valign={CENTER}>
+                            <entry
+                                placeholderText="Search"
+                                text={text()}
+                                onChanged={self => text.set(self.text)}
+                                onActivate={onEnter}
+                            />
+                        </Section>
+                        <FlowBox
+                            column_spacing={6}
+                            row_spacing={6}
+                            max_children_per_line={6}
+                            homogeneous
+                            hexpand={false}
+                            vexpand={false}
+                            halign={CENTER}
+                        >
+                            {list.as(list => list.map(app => (
+                                <AppButton app={app} />
+                            )))}
+                        </FlowBox>
+                        <box halign={CENTER} className="not-found" vertical
+                            visible={list.as(l => l.length === 0)}>
+                            <icon icon="system-search-symbolic" />
+                            <label label="No match found" />
+                        </box>
+                    </box>
+                </MainArea>
+                <eventbox vexpand hexpand on_click={hide} />
             </box>
-        </MainArea>
-    </window>
+            <eventbox vexpand hexpand on_click={hide} />
+        </box>
+    </window >
 }
