@@ -13,8 +13,22 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      agsOut = ags.outputs;
+      astalPatched = agsOut.packages.${system}.astal.overrideAttrs (old: {
+        patches = (old.patches or [ ]) ++ [
+          (pkgs.fetchpatch {
+            url = "https://patch-diff.githubusercontent.com/raw/Aylur/astal/pull/13.patch";
+            hash = "sha256-0000000000000000000000000000000000000000000000000000";
+          })
+        ];
+      });
+      agsPatched = agsOut // {
+        packages = agsOut.packages.${system} // {
+          astal = astalPatched;
+        };
+      };
       hyprshell =
-        (ags.lib.bundle {
+        (agsPatched.lib.bundle {
           inherit pkgs;
           src = ./.;
           name = "hyprshell"; # name of executable
@@ -25,25 +39,25 @@
             gtksourceview
             webkitgtk
             accountsservice
-            ags.packages.${system}.docs
-            ags.packages.${system}.io
-            ags.packages.${system}.gjs
-            ags.packages.${system}.astal3
-            ags.packages.${system}.astal4
-            ags.packages.${system}.apps
-            ags.packages.${system}.auth
-            ags.packages.${system}.battery
-            ags.packages.${system}.bluetooth
-            ags.packages.${system}.cava
-            ags.packages.${system}.greet
-            ags.packages.${system}.hyprland
-            ags.packages.${system}.mpris
-            ags.packages.${system}.network
-            ags.packages.${system}.notifd
-            ags.packages.${system}.powerprofiles
-            ags.packages.${system}.river
-            ags.packages.${system}.tray
-            ags.packages.${system}.wireplumber
+            agsPatched.packages.docs
+            agsPatched.packages.io
+            agsPatched.packages.gjs
+            agsPatched.packages.astal3
+            agsPatched.packages.astal4
+            agsPatched.packages.apps
+            agsPatched.packages.auth
+            agsPatched.packages.battery
+            agsPatched.packages.bluetooth
+            agsPatched.packages.cava
+            agsPatched.packages.greet
+            agsPatched.packages.hyprland
+            agsPatched.packages.mpris
+            agsPatched.packages.network
+            agsPatched.packages.notifd
+            agsPatched.packages.powerprofiles
+            agsPatched.packages.river
+            agsPatched.packages.tray
+            agsPatched.packages.wireplumber
           ];
         }).overrideAttrs
           (old: {
@@ -55,32 +69,53 @@
       packages.${system} = {
         default = hyprshell;
         hyprshell = hyprshell;
+        ags = {
+          ags = agsPatched.packages.agsFull;
+          docs = agsPatched.packages.docs;
+          io = agsPatched.packages.io;
+          gjs = agsPatched.packages.gjs;
+          astal3 = agsPatched.packages.astal3;
+          astal4 = agsPatched.packages.astal4;
+          apps = agsPatched.packages.apps;
+          auth = agsPatched.packages.auth;
+          battery = agsPatched.packages.battery;
+          bluetooth = agsPatched.packages.bluetooth;
+          cava = agsPatched.packages.cava;
+          greet = agsPatched.packages.greet;
+          hyprland = agsPatched.packages.hyprland;
+          mpris = agsPatched.packages.mpris;
+          network = agsPatched.packages.network;
+          notifd = agsPatched.packages.notifd;
+          powerprofiles = agsPatched.packages.powerprofiles;
+          river = agsPatched.packages.river;
+          tray = agsPatched.packages.tray;
+          wireplumber = agsPatched.packages.wireplumber;
+        };
       };
 
       overlays.default = final: prev: {
         hyprshell = hyprshell;
         ags = {
-          astal = ags.inputs.astal.packages.${system}.default;
-          ags = ags.packages.${system}.agsFull;
-          docs = ags.packages.${system}.docs;
-          io = ags.packages.${system}.io;
-          gjs = ags.packages.${system}.gjs;
-          astal3 = ags.packages.${system}.astal3;
-          astal4 = ags.packages.${system}.astal4;
-          apps = ags.packages.${system}.apps;
-          auth = ags.packages.${system}.auth;
-          battery = ags.packages.${system}.battery;
-          bluetooth = ags.packages.${system}.bluetooth;
-          cava = ags.packages.${system}.cava;
-          greet = ags.packages.${system}.greet;
-          hyprland = ags.packages.${system}.hyprland;
-          mpris = ags.packages.${system}.mpris;
-          network = ags.packages.${system}.network;
-          notifd = ags.packages.${system}.notifd;
-          powerprofiles = ags.packages.${system}.powerprofiles;
-          river = ags.packages.${system}.river;
-          tray = ags.packages.${system}.tray;
-          wireplumber = ags.packages.${system}.wireplumber;
+          ags = agsPatched.packages.agsFull;
+          docs = agsPatched.packages.docs;
+          io = agsPatched.packages.io;
+          gjs = agsPatched.packages.gjs;
+          astal3 = agsPatched.packages.astal3;
+          astal4 = agsPatched.packages.astal4;
+          apps = agsPatched.packages.apps;
+          auth = agsPatched.packages.auth;
+          battery = agsPatched.packages.battery;
+          bluetooth = agsPatched.packages.bluetooth;
+          cava = agsPatched.packages.cava;
+          greet = agsPatched.packages.greet;
+          hyprland = agsPatched.packages.hyprland;
+          mpris = agsPatched.packages.mpris;
+          network = agsPatched.packages.network;
+          notifd = agsPatched.packages.notifd;
+          powerprofiles = agsPatched.packages.powerprofiles;
+          river = agsPatched.packages.river;
+          tray = agsPatched.packages.tray;
+          wireplumber = agsPatched.packages.wireplumber;
         };
       };
     };
