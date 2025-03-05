@@ -91,14 +91,14 @@ export default function Applauncher() {
             <box hexpand vexpand vertical>
                 <MainArea>
                     <box width_request={width(w => w / 2)} vertical spacing={12} halign={CENTER} valign={START} >
-                        <Section height_request={50} width_request={300} halign={CENTER} valign={CENTER}>
-                            <entry
-                                placeholderText="Search"
-                                text={text()}
-                                onChanged={self => text.set(self.text)}
-                                onActivate={onEnter}
-                            />
-                        </Section>
+                        <entry className="entry"
+                            height_request={50} width_request={300} halign={CENTER} valign={CENTER}
+                            placeholderText="Search"
+                            text={text()}
+                            onChanged={self => text.set(self.text)}
+                            onActivate={onEnter}
+                            primary_icon_name={"system-search"}
+                        />
                         <FlowBox
                             column_spacing={6}
                             row_spacing={6}

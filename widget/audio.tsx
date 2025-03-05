@@ -37,30 +37,40 @@ function AudioWindowToggle() {
 
         function Endpoint(props: { endpoint: Wp.Endpoint, overamp?: boolean, show_name?: boolean }) {
             const ep = props.endpoint
-            const inner = Variable.derive([bind(ep, "name"), bind(ep, "description"), bind(ep, "volume"), bind(ep, "mute"), bind(ep, "volume_icon")],
-                (name, desc, volume, mute, volume_icon) =>
-                    <box className={[mute ? "muted" : "", "subsubsection"].join(" ")}>
-                        <button onClick={() => ep.set_mute(!ep.get_mute())}>
-                            <icon className="device-icon" css={"font-size: 2rem"} icon={volume_icon} />
-                        </button>
-                        <eventbox onScroll={on_scroll(ep)}>
-                            <box vertical hexpand >
-                                <label label={props.show_name ? name : desc} truncate />
-                                <slider
-                                    className="slider"
-                                    drawValue={false}
-                                    min={0}
-                                    max={1}
-                                    value={volume}
-                                    onDragged={({ value }) => {
-                                        ep?.set_volume(value);
-                                        ep?.set_mute(false);
-                                    }} />
-                            </box>
-                        </eventbox>
+            const state = Variable.derive([
+                bind(ep, "name"),
+                bind(ep, "description"),
+                bind(ep, "volume"),
+                bind(ep, "mute"),
+                bind(ep, "volume_icon")
+            ], (name, desc, vol, mute, icon) => ({
+                vol,
+                name,
+                desc,
+                mute,
+                icon,
+            }))
+
+            return <box className={state(s => [s.mute ? "muted" : "", "subsubsection"].join(" "))}>
+                <button onClick={() => ep.set_mute(!ep.get_mute())}>
+                    <icon className="device-icon" css={"font-size: 2rem"} icon={state(s => s.icon)} />
+                </button>
+                <eventbox onScroll={on_scroll(ep)}>
+                    <box vertical hexpand >
+                        <label label={state(s => props.show_name ? s.name : s.desc)} truncate />
+                        <slider
+                            className="slider"
+                            drawValue={false}
+                            value={state(s => s.vol)}
+                            min={0}
+                            max={1}
+                            onDragged={({ value }) => {
+                                ep?.set_volume(value)
+                            }}
+                        />
                     </box>
-            )
-            return <box> {bind(inner)} </box>
+                </eventbox>
+            </box>
         }
 
         let speakers_content = Variable.derive([speakers], speakers => {
