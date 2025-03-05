@@ -1,9 +1,11 @@
-import { bind, Binding } from "astal"
+import { Binding } from "astal";
 import Astal from "gi://Astal?version=3.0"
+import { GdkPixbuf } from "gi://GdkPixbuf?version=2.0";
 import Gtk from "gi://Gtk?version=3.0";
 
 type StatusIconProps = {
-    icon_name: Binding<string> | string;
+    icon_name?: Binding<string> | string;
+    icon_pixbuf?: Binding<GdkPixbuf.Pixbuf> | GdkPixbuf.Pixbuf;
     tooltip?: Binding<string> | string;
     className?: Binding<string> | string;
     on_click?: ((self: Gtk.Widget, ev: Astal.ClickEvent) => unknown) | string | string[];
@@ -24,6 +26,6 @@ export default function StatusIcon(props: StatusIconProps) {
         onScroll={props.on_scroll}
         className={classes}
     >
-        <icon icon={props.icon_name} />
+        <icon icon={props.icon_name} pixbuf={props.icon_pixbuf} />
     </button>
 }
