@@ -7,6 +7,7 @@ import NetworkIcon from "./network"
 import BluetoothIcon from "./bluetooth"
 import AudioIcon from "./audio"
 import { SysTray } from "./tray"
+import PowerIcon from "./powerMenu"
 
 export default function Bar(gdkmonitor: Gdk.Monitor): Gtk.Widget {
     return <window
@@ -31,6 +32,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor): Gtk.Widget {
                 <BluetoothIcon />
                 <AudioIcon />
                 <BatteryIcon />
+                <PowerIcon />
             </box>
         </centerbox>
     </window>
