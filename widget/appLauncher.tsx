@@ -29,7 +29,7 @@ function AppButton({ app }: { app: Apps.Application }) {
         `<b>Executable:</b> ${app.executable || 'Unavailable'}\n` +
         `<b>Entry:</b> ${app.entry || 'Unavailable'}\n` +
         `<b>Keywords:</b> ${(app.keywords && app.keywords.length > 0) ? app.keywords.join(", ") : 'Unavailable'}\n` +
-        `<b>Categories:</b> ${(app.categories && app.categories.length > 0) ? app.categories.join(", ") : 'Unavailable'}` +
+        `<b>Categories:</b> ${(app.categories && app.categories.length > 0) ? app.categories.join(", ") : 'Unavailable'}\n` +
         `<b>Icon name:</b> ${app.icon_name || "Unavailable"}`;
 
     return <Section
