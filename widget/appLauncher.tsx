@@ -29,7 +29,8 @@ function AppButton({ app }: { app: Apps.Application }) {
         `<b>Executable:</b> ${app.executable || 'Unavailable'}\n` +
         `<b>Entry:</b> ${app.entry || 'Unavailable'}\n` +
         `<b>Keywords:</b> ${(app.keywords && app.keywords.length > 0) ? app.keywords.join(", ") : 'Unavailable'}\n` +
-        `<b>Categories:</b> ${(app.categories && app.categories.length > 0) ? app.categories.join(", ") : 'Unavailable'}`;
+        `<b>Categories:</b> ${(app.categories && app.categories.length > 0) ? app.categories.join(", ") : 'Unavailable'}` +
+        `<b>Icon name:</b> ${app.icon_name || "Unavailable"}`;
 
     return <Section
         hexpand={false} vexpand={false} width_request={APP_BTN_WIDTH} height_request={APP_BTN_HEIGHT}
@@ -64,7 +65,16 @@ export default function Applauncher() {
     const width = Variable(1000)
 
     const text = Variable("")
-    const list = text(text => apps.fuzzy_query(text).slice(0, MAX_ITEMS))
+    const list = text(text => apps.fuzzy_query(text).slice(0, MAX_ITEMS).sort((a, b) => {
+        const lowerA = a.name.toLowerCase()
+        const lowerB = b.name.toLowerCase()
+        if (lowerA === lowerA) {
+            return lowerA < lowerB ? -1 : 1;
+        } else {
+            return a.name < b.name ? -1 : 1;
+        }
+    }))
+
     const onEnter = () => {
         apps.fuzzy_query(text.get())?.[0].launch()
         hide()
