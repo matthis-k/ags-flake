@@ -1,6 +1,15 @@
 import { Variable, bind } from "astal"
+import Apps from "gi://AstalApps"
 import Hyprland from "gi://AstalHyprland"
 const hyprland = Hyprland.get_default()
+const apps = new Apps.Apps({
+    name_multiplier: 2,
+    entry_multiplier: 1,
+    executable_multiplier: 0,
+    description_multiplier: 0,
+    keywords_multiplier: 0,
+    categories_multiplier: 0,
+})
 
 type HyprlandState = {
     workspaces: Hyprland.Workspace[];
@@ -12,7 +21,6 @@ type HyprlandState = {
     cursor_pos: Hyprland.Position;
     binds: Hyprland.Bind[];
 }
-
 
 export default function HyprlandWorkspaces(): JSX.Element {
     let hyprland_state: Variable<HyprlandState> = Variable.derive([
@@ -43,7 +51,7 @@ export default function HyprlandWorkspaces(): JSX.Element {
             {clients.map(client => (
                 <button className={["client", state.focused_client === client ? "focused-client" : ""].join(" ")}
                     onClicked={() => client.focus()} >
-                    <icon icon={client.class} />
+                    <icon icon={bind(client, "initialClass").as((init_class) => apps.exact_query(init_class)[0]?.icon_name || init_class)} />
                 </button>
             ))}
         </box>
