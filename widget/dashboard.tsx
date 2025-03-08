@@ -1,35 +1,46 @@
 import { App, Astal, Gtk } from "astal/gtk3";
-import { bind, Variable } from "astal";
-import Gdk from "gi://Gdk?version=3.0";
+import { Variable } from "astal";
+import { MutableProps } from "../lib/utils";
 
 type DashboardState = {
     content: Variable<Gtk.Widget | null>;
     content_name: Variable<string>;
-    monitor: Variable<Gdk.Monitor>;
-    WIN_NAME: string;
+    win_opts: WinProps;
 }
+type WinProps = Partial<MutableProps<Astal.Window>>;
 
-export function dashboard_toggle_content(name: string, content: Gtk.Widget, monitor?: Gdk.Monitor) {
-    App.get_window(dashboard.WIN_NAME)?.hide()
+export function dashboard_toggle_content(name: string, content: Gtk.Widget, win_opts: WinProps) {
+    App.get_window(dashboard.win_opts.name || "")?.hide()
     const new_content = dashboard.content_name.get() == name ? null : content
     dashboard.content.get()?.destroy()
     dashboard.content.set(new_content)
-    if (monitor) { dashboard.monitor.set(monitor) }
-    App.get_window(dashboard.WIN_NAME)?.show()
+
+    let key: keyof typeof win_opts;
+    for (key in win_opts) {
+        let value = win_opts[key];
+        set_win_opt(key, value)
+    }
+
+    App.get_window(dashboard.win_opts.name || "")?.show()
+}
+
+function set_win_opt<K extends keyof WinProps>(key: K, value: WinProps[K]) {
+    if (value == undefined) {
+        return
+    }
+    dashboard.win_opts[key] = value
 }
 
 export const dashboard: DashboardState = {
     content: Variable(null),
     content_name: Variable(""),
-    monitor: Variable(App.get_monitors()[0]),
-    WIN_NAME: "dashboard",
+    win_opts: { name: "dashboard" },
 }
 
 export function DASHBOARD_WIN() {
     return <window
-        name={dashboard.WIN_NAME}
         className={"dashboard"}
-        gdkmonitor={bind(dashboard.monitor)}
+        {...dashboard.win_opts}
         application={App}
         exclusivity={Astal.Exclusivity.EXCLUSIVE}
         anchor={Astal.WindowAnchor.TOP
