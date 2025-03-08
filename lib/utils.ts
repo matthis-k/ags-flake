@@ -20,3 +20,12 @@ export function name_compare(a: string, b: string, AaBbCc: boolean = true): -1 |
         return a < b ? -1 : 1;
     }
 }
+
+
+type MutableKeys<T> = {
+    [K in keyof T]-?: IfEquals<{ [Q in K]: T[K] }, { -readonly [Q in K]: T[K] }, K, never>
+}[keyof T];
+
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends Y ? 1 : 2) ? A : B;
+
+export type MutableProps<T> = Pick<T, MutableKeys<T>>;
