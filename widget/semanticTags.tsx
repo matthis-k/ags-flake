@@ -1,5 +1,5 @@
 import { Binding } from "astal";
-import { Astal, Gtk } from "astal/gtk3";
+import { Astal } from "astal/gtk3";
 
 function concatClassName(className: string | Binding<string | undefined> | undefined, append: string) {
     if (typeof className === "string") {
