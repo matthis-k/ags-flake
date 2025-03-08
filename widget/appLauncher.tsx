@@ -2,6 +2,7 @@ import Apps from "gi://AstalApps"
 import { App, Astal, astalify, ConstructProps, Gdk, Gtk } from "astal/gtk3"
 import { GObject, Variable } from "astal"
 import { Header, MainArea, Section } from "./semanticTags"
+import { name_compare } from "../lib/utils"
 
 class FlowBox extends astalify(Gtk.FlowBox) {
     static { GObject.registerClass(this) }
@@ -65,15 +66,7 @@ export default function Applauncher() {
     const width = Variable(1000)
 
     const text = Variable("")
-    const list = text(text => apps.fuzzy_query(text).slice(0, MAX_ITEMS).sort((a, b) => {
-        const lowerA = a.name.toLowerCase()
-        const lowerB = b.name.toLowerCase()
-        if (lowerA === lowerA) {
-            return lowerA < lowerB ? -1 : 1;
-        } else {
-            return a.name < b.name ? -1 : 1;
-        }
-    }))
+    const list = text(text => apps.fuzzy_query(text).slice(0, MAX_ITEMS).sort((a, b) => name_compare(a.name, b.name)))
 
     const onEnter = () => {
         apps.fuzzy_query(text.get())?.[0].launch()

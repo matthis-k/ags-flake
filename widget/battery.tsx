@@ -1,24 +1,16 @@
 import Battery from "gi://AstalBattery"
 import PowerProfiles from "gi://AstalPowerProfiles"
-import { App, Astal, Gtk } from "astal/gtk3"
+import { Gtk } from "astal/gtk3"
 import { Variable, bind } from "astal"
 import { LevelBar } from "astal/gtk3/widget"
 import StatusIcon from "./StatusIcon"
 import { Header, MainArea, Section } from "./semanticTags"
+import { dashboard_toggle_content } from "./dashboard"
 
 const battery = Battery.get_default()
 const power_profiles = PowerProfiles.get_default()
 
-let battery_menu_window: Gtk.Window | null
-
-function BatteryWindowToggle() {
-    if (battery_menu_window) {
-        App.remove_window(battery_menu_window)
-        battery_menu_window.close()
-        battery_menu_window = null
-        return
-    }
-
+function dashboard_toggle_battery() {
     function cycleProfiles() {
         const cur = power_profiles.active_profile
         const profiles = power_profiles.get_profiles().map(p => p.profile)
@@ -47,42 +39,30 @@ function BatteryWindowToggle() {
         </Section>)
     })
 
-    return <window
-        name={"BatteryMenu"}
-        className={"BatteryMenu"}
-        application={App}
-        setup={self => battery_menu_window = self}
-        exclusivity={Astal.Exclusivity.EXCLUSIVE}
-        anchor={Astal.WindowAnchor.TOP
-            | Astal.WindowAnchor.RIGHT}>
-        <eventbox on_hover_lost={() => {
-            BatteryWindowToggle()
-        }} >
-            <MainArea>
-                <Header title="Battery" />
-                {bind(status_subsection)}
-                <Section>
-                    <button onClicked={cycleProfiles}
-                        className={bind(power_profiles, "active_profile")}>
-                        <box>
-                            <icon
-                                icon={bind(power_profiles, "icon_name")} 
-                                css={"font-size: 3rem;"}
-                                className={bind(power_profiles, "active_profile").as(active_profile =>
-                                    ["power-profiles-icon", active_profile].join(" "))} />
-                            <box vertical valign={Gtk.Align.CENTER}>
-                                <Header title={"Power profile"} />
-                                <label label={bind(power_profiles, "activeProfile")} />
-                            </box>
+    dashboard_toggle_content("battery",
+        <MainArea>
+            <Header title="Battery" />
+            {bind(status_subsection)}
+            <Section>
+                <button onClicked={cycleProfiles}
+                    className={bind(power_profiles, "active_profile")}>
+                    <box>
+                        <icon
+                            icon={bind(power_profiles, "icon_name")}
+                            css={"font-size: 3rem;"}
+                            className={bind(power_profiles, "active_profile").as(active_profile =>
+                                ["power-profiles-icon", active_profile].join(" "))} />
+                        <box vertical valign={Gtk.Align.CENTER}>
+                            <Header title={"Power profile"} />
+                            <label label={bind(power_profiles, "activeProfile")} />
                         </box>
-                    </button>
-                </Section>
-            </MainArea>
-        </eventbox>
-    </window>
+                    </box>
+                </button>
+            </Section>
+        </MainArea>)
 }
 
-export default function BatteryIcon(): JSX.Element {
+export default function BatteryIcon(): Gtk.Widget {
     const tooltip = Variable.derive([
         bind(battery, "percentage"),
         bind(battery, "charging"),
@@ -129,7 +109,7 @@ export default function BatteryIcon(): JSX.Element {
         className={bind(classes)}
         icon_name={bind(icon)}
         tooltip={bind(tooltip)}
-        on_click={BatteryWindowToggle}
+        on_click={dashboard_toggle_battery}
     />
 }
 

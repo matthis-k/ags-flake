@@ -209,11 +209,7 @@ $section-border-radius: 0.5rem;
 $nested-section-border-radius: 0.375rem;
 
 window.hyprshell-launcher,
-window.BatteryMenu,
-window.PowerMenu,
-window.AudioMenu,
-window.NetworkingMenu,
-window.BluetoothMenu {
+window.dashboard {
   * {
     all: unset;
     background: transparent;

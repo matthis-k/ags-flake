@@ -1,8 +1,9 @@
 import Wp from "gi://AstalWp"
-import { App, Astal, Gtk } from "astal/gtk3"
+import { Gtk } from "astal/gtk3"
 import { Variable, bind } from "astal"
 import StatusIcon from "./StatusIcon"
 import { Header, MainArea, Section } from "./semanticTags"
+import { dashboard_toggle_content } from "./dashboard"
 const wp = Wp.get_default()
 
 function on_scroll(endpoint: Wp.Endpoint | null) {
@@ -18,116 +19,71 @@ function on_scroll(endpoint: Wp.Endpoint | null) {
     }
 }
 
-let audio_menu_window: Gtk.Window | null
+function Endpoint(props: { endpoint: Wp.Endpoint, overamp?: boolean, show_name?: boolean }) {
+    const ep = props.endpoint
+    const state = Variable.derive([
+        bind(ep, "name"),
+        bind(ep, "description"),
+        bind(ep, "volume"),
+        bind(ep, "mute"),
+        bind(ep, "volume_icon")
+    ], (name, desc, vol, mute, icon) => ({
+        vol,
+        name,
+        desc,
+        mute,
+        icon,
+    }))
 
-function AudioWindowToggle() {
-    if (audio_menu_window) {
-        App.remove_window(audio_menu_window)
-        audio_menu_window.close()
-        audio_menu_window = null
-        return
-    }
-
-    let content = Variable(<box><label label={"No audio detected"} /></box>)
-
-    if (wp) {
-        const speakers = bind(wp.audio, "speakers");
-        const microphones = bind(wp.audio, "microphones");
-        const streams = bind(wp.audio, "streams");
-
-        function Endpoint(props: { endpoint: Wp.Endpoint, overamp?: boolean, show_name?: boolean }) {
-            const ep = props.endpoint
-            const state = Variable.derive([
-                bind(ep, "name"),
-                bind(ep, "description"),
-                bind(ep, "volume"),
-                bind(ep, "mute"),
-                bind(ep, "volume_icon")
-            ], (name, desc, vol, mute, icon) => ({
-                vol,
-                name,
-                desc,
-                mute,
-                icon,
-            }))
-
-            return <box className={state(s => [s.mute ? "muted" : "", "subsubsection"].join(" "))}>
-                <button onClick={() => ep.set_mute(!ep.get_mute())}>
-                    <icon className="device-icon" css={"font-size: 2rem"} icon={state(s => s.icon)} />
-                </button>
-                <eventbox onScroll={on_scroll(ep)}>
-                    <box vertical hexpand >
-                        <label label={state(s => props.show_name ? s.name : s.desc)} truncate />
-                        <slider
-                            className="slider"
-                            drawValue={false}
-                            value={state(s => s.vol)}
-                            min={0}
-                            max={1}
-                            onDragged={({ value }) => {
-                                ep?.set_volume(value)
-                            }}
-                        />
-                    </box>
-                </eventbox>
+    return <box className={state(s => [s.mute ? "muted" : "", "subsubsection"].join(" "))}>
+        <button onClick={() => ep.set_mute(!ep.get_mute())}>
+            <icon className="device-icon" css={"font-size: 2rem"} icon={state(s => s.icon)} />
+        </button>
+        <eventbox onScroll={on_scroll(ep)}>
+            <box vertical hexpand >
+                <label label={state(s => props.show_name ? s.name : s.desc)} truncate />
+                <slider
+                    className="slider"
+                    drawValue={false}
+                    value={state(s => s.vol)}
+                    min={0}
+                    max={1}
+                    onDragged={({ value }) => {
+                        ep?.set_volume(value)
+                    }}
+                />
             </box>
-        }
+        </eventbox>
+    </box>
+}
 
-        let speakers_content = Variable.derive([speakers], speakers => {
-            return <Section>
+function dashboard_toggle_audio() {
+    let content: Gtk.Widget
+    if (!wp)
+        content = <box><label label={"No audio detected"} /></box>
+    else {
+        content = <MainArea widthRequest={400}>
+            <Section>
                 <Header title="Speakers" />
-                {speakers.length <= 0
+                {bind(wp.audio, "speakers").as(speakers => speakers.length <= 0
                     ? <label label={"No speakers found"} />
-                    : speakers.map(speaker => <Endpoint endpoint={speaker} />)}
+                    : speakers.map(speaker => <Endpoint endpoint={speaker} />))}
             </Section >
-        })
-
-        let microphones_content = Variable.derive([microphones], microphones => {
-            return <Section>
+            <Section>
                 <Header title="Microphones" />
-                {microphones.length <= 0
+                {bind(wp.audio, "microphones").as(mics => mics.length <= 0
                     ? <label label={"No microphones found"} />
-                    : microphones.map(mic => <Endpoint endpoint={mic} />)}
-            </Section>
-        })
-
-        let streams_content = Variable.derive([streams], streams => {
+                    : mics.map(mic => <Endpoint endpoint={mic} />))}
+            </Section >
             <Section>
                 <Header title="Streams" />
-                {streams.length <= 0
-                    ? <label label={"No active audio streams"} />
-                    : streams.map(stream => <Endpoint endpoint={stream} show_name={true} />)}
+                {bind(wp.audio, "streams").as(streams => streams.length <= 0
+                    ? <label label={"No audio playing"} />
+                    : streams.map(stream => <Endpoint endpoint={stream} show_name />))}
             </Section >
-        })
-
-        content = Variable.derive([speakers_content, microphones_content, streams_content],
-            (speakers_content, microphones_content, streams_content) => {
-                return <MainArea>
-                    {speakers_content}
-                    {microphones_content}
-                    {streams_content}
-                </MainArea >
-            })
+        </MainArea>
     }
-
-
-
-
-    (<window
-        name={"AudioMenu"}
-        className={"AudioMenu"}
-        application={App}
-        setup={self => audio_menu_window = self}
-        exclusivity={Astal.Exclusivity.EXCLUSIVE}
-        widthRequest={400}
-        anchor={Astal.WindowAnchor.TOP
-            | Astal.WindowAnchor.RIGHT}>
-        <eventbox on_hover_lost={() => {
-            AudioWindowToggle()
-        }} >
-            {bind(content)}
-        </eventbox>
-    </window>)
+    dashboard_toggle_content("audio", content)
 }
 
 
@@ -141,8 +97,9 @@ export default function AudioIcon() {
     const classes = bind(wp.audio.default_speaker, "mute").as(muted => [`${muted ? "muted" : ""}`, "audio-icon"].join(" "))
 
     return <StatusIcon
+        className={classes}
         tooltip={tooltip}
-        on_click={AudioWindowToggle}
+        on_click={dashboard_toggle_audio}
         on_scroll={on_scroll(wp?.audio?.get_default_speaker())}
         icon_name={bind(icon)}
     />
