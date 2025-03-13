@@ -48,12 +48,14 @@ export default function HyprlandWorkspaces(): JSX.Element {
 
         return <box className={["workspace", state.focused_workspace === ws ? "focused-workspace" : "", clients.length == 0 ? "empty" : ""].join(" ")}>
             <button className="workspace-button" label={ws.id.toString()} onClicked={() => ws.focus()} />
-            {clients.map(client => (
-                <button className={["client", state.focused_client === client ? "focused-client" : ""].join(" ")}
-                    onClicked={() => client.focus()} >
-                    <icon icon={bind(client, "initialClass").as((init_class) => apps.exact_query(init_class)[0]?.icon_name || init_class)} />
-                </button>
-            ))}
+            {clients
+                .filter(cl => cl.initial_class != "xwaylandvideobridge")
+                .map(client => (
+                    <button className={["client", state.focused_client === client ? "focused-client" : ""].join(" ")}
+                        onClicked={() => client.focus()} >
+                        <icon icon={bind(client, "initialClass").as((init_class) => apps.exact_query(init_class)[0]?.icon_name || init_class)} />
+                    </button>
+                ))}
         </box>
 
     }
