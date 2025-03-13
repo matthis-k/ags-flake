@@ -1,6 +1,6 @@
 import Apps from "gi://AstalApps"
 import { App, Astal, astalify, ConstructProps, Gdk, Gtk } from "astal/gtk3"
-import { GObject, Variable } from "astal"
+import { execAsync, GObject, Variable } from "astal"
 import { Header, MainArea, Section } from "./semanticTags"
 import { name_compare } from "../lib/utils"
 
@@ -38,7 +38,7 @@ function AppButton({ app }: { app: Apps.Application }) {
     >
         <button
             className="AppButton"
-            onClicked={() => { hide(); app.launch() }}>
+            onClicked={() => { hide(); execAsync("uwsm app -- " + app.executable) }}>
             <box vertical
                 tooltip_markup={tooltipMarkup}
                 hexpand={false} vexpand={false}

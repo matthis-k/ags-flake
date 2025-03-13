@@ -19,7 +19,7 @@ function dashboard_toggle_power_menu() {
                     </button>
                 </Section>
                 <Section>
-                    <button onClicked={() => exec("hyprctl dispatch exit")} tooltipText={"Log out"}>
+                    <button onClicked={() => exec("uwsm stop")} tooltipText={"Log out"}>
                         <icon icon={"system-log-out-symbolic"} css="font-size: 2rem;" />
                     </button>
                 </Section>
