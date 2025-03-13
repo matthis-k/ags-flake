@@ -9,7 +9,7 @@ type DashboardState = {
 }
 type WinProps = Partial<MutableProps<Astal.Window>>;
 
-export function dashboard_toggle_content(name: string, content: Gtk.Widget, win_opts: WinProps) {
+export function dashboard_toggle_content(name: string, content: Gtk.Widget, win_opts: WinProps = {}) {
     App.get_window(dashboard.win_opts.name || "")?.hide()
     const new_content = dashboard.content_name.get() == name ? null : content
     dashboard.content.get()?.destroy()
