@@ -26,13 +26,15 @@ export default function Bar(gdkmonitor: Gdk.Monitor): Gtk.Widget {
             <box>
                 <Clock />
             </box>
-            <box halign={Gtk.Align.END} spacing={5}>
+            <box halign={Gtk.Align.END} spacing={16}>
                 <SysTray />
-                <NetworkIcon />
-                <BluetoothIcon />
-                <AudioIcon />
-                <BatteryIcon />
-                <PowerIcon />
+                <box className="status" spacing={5}>
+                    <NetworkIcon />
+                    <BluetoothIcon />
+                    <AudioIcon />
+                    <BatteryIcon />
+                    <PowerIcon />
+                </box>
             </box>
         </centerbox>
     </window>

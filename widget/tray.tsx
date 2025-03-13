@@ -3,7 +3,7 @@ import Tray from "gi://AstalTray"
 const tray = Tray.get_default()
 
 export function SysTray() {
-    return <box className="sys-tray">
+    return <box className="sys-tray" spacing={5}>
         {bind(tray, "items").as(items => items.map(item => (
             <menubutton
                 tooltip_markup={bind(item, "tooltipMarkup")}
