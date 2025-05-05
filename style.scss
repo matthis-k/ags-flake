@@ -1,4 +1,5 @@
 // https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
+@use "sass:color";
 
 //catppuccin mocha
 $base: #1e1e2e;
@@ -302,6 +303,146 @@ window.dashboard {
     block.filled {
       background: $surface2;
       border-radius: $main-border-radius;
+    }
+  }
+}
+
+window.notifications {
+  .mainArea {
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    background: $surface0;
+    border-left: 0.3rem solid $overlay1;
+    font-family: monospace;
+    color: $text;
+
+
+    .header {
+      margin-bottom: 0.5rem;
+
+      .app-name {
+        margin-left: 1rem;
+        font-weight: bold;
+        color: $blue;
+      }
+
+      .time {
+        color: $overlay1;
+        font-size: 0.9rem;
+        padding-right: 1rem;
+      }
+
+      .close {
+        all: unset;
+        min-width: 24px;
+        min-height: 24px;
+        color: $red;
+        border-radius: 50%;
+
+        &:hover {
+          background: color.mix($red, $surface2, 20%);
+        }
+      }
+    }
+
+    .horizontal {
+      min-height: 3px;
+    }
+
+    .content {
+      margin-top: 0.3rem;
+
+      .summary {
+        font-weight: bold;
+        color: $text;
+      }
+
+      .body {
+        color: $subtext0;
+        margin-top: 0.25rem;
+      }
+
+      .image,
+      .icon-image {
+        min-width: 3rem;
+        min-height: 3rem;
+        background-size: cover;
+        background-position: center;
+        border-radius: 0.25rem;
+      }
+    }
+
+    .actions {
+      margin-top: 0.5rem;
+
+      button {
+        background-color: $red;
+        border-radius: 0.25rem;
+        padding: 0.3rem 0.6rem;
+
+        &:hover {
+          background-color: $overlay0;
+        }
+
+        label {
+          color: $text;
+          font-weight: bold;
+        }
+      }
+    }
+
+    &.low {
+      border-left: 4px solid $green;
+      background: $surface0;
+
+      .actions button {
+        all: unset;
+        background: $surface2;
+      }
+
+      .horizontal {
+        background: $surface2;
+      }
+
+      .header .app-name {
+        color: $green;
+      }
+    }
+
+    &.normal {
+      border-left: 4px solid $yellow;
+      background: $surface0;
+
+      .actions button {
+        all: unset;
+        background: $surface2;
+      }
+
+      .horizontal {
+        background: $surface2;
+      }
+
+      .header .app-name {
+        color: $yellow;
+      }
+    }
+
+    &.critical {
+      border-left: 4px solid $red;
+      background: color.mix($red, $surface0, 20%);
+
+      .actions button {
+        all: unset;
+        background: color.mix($red, $surface2, 20%);
+      }
+
+      .horizontal {
+        background: color.mix($red, $surface2, 20%);
+      }
+
+      .header .app-name {
+        color: $red;
+      }
     }
   }
 }
