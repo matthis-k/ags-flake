@@ -1,7 +1,17 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    ags.url = "github:aylur/ags";
+
+    astal = {
+      url = "github:aylur/astal";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    ags = {
+      url = "github:aylur/ags";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.astal.follows = "astal";
+    };
   };
 
   outputs =
@@ -9,114 +19,77 @@
       self,
       nixpkgs,
       ags,
+      astal,
     }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      agsOut = ags.outputs;
-      astalPatched = agsOut.packages.${system}.astal.overrideAttrs (old: {
-        patches = (old.patches or [ ]) ++ [
-          (pkgs.fetchpatch {
-            url = "https://patch-diff.githubusercontent.com/raw/Aylur/astal/pull/13.patch";
-            hash = "sha256-0000000000000000000000000000000000000000000000000000";
-          })
+      hyprshell = pkgs.stdenv.mkDerivation {
+        name = "hyprshell";
+        pname = "hyprshell";
+
+        src = ./.;
+
+        nativeBuildInputs = with pkgs; [
+          wrapGAppsHook
+          gobject-introspection
+          ags.packages.${system}.default
         ];
-      });
-      agsPatched = agsOut // {
-        packages = agsOut.packages.${system} // {
-          astal = astalPatched;
-        };
-      };
-      hyprshell =
-        (agsPatched.lib.bundle {
-          inherit pkgs;
-          src = ./.;
-          name = "hyprshell"; # name of executable
-          entry = "app.ts";
-          gtk4 = false;
 
-          extraPackages = with pkgs; [
-            gtksourceview
-            webkitgtk
-            accountsservice
-            agsPatched.packages.docs
-            agsPatched.packages.io
-            agsPatched.packages.gjs
-            agsPatched.packages.astal3
-            agsPatched.packages.astal4
-            agsPatched.packages.apps
-            agsPatched.packages.auth
-            agsPatched.packages.battery
-            agsPatched.packages.bluetooth
-            agsPatched.packages.cava
-            agsPatched.packages.greet
-            agsPatched.packages.hyprland
-            agsPatched.packages.mpris
-            agsPatched.packages.network
-            agsPatched.packages.notifd
-            agsPatched.packages.powerprofiles
-            agsPatched.packages.river
-            agsPatched.packages.tray
-            agsPatched.packages.wireplumber
+        buildInputs =
+          let
+            astalLibs = astal.packages.${system};
+          in
+          [
+            pkgs.glib
+            pkgs.gjs
+            astalLibs.apps
+            astalLibs.astal3
+            astalLibs.auth
+            astalLibs.battery
+            astalLibs.bluetooth
+            astalLibs.cava
+            astalLibs.greet
+            astalLibs.hyprland
+            astalLibs.io
+            astalLibs.mpris
+            astalLibs.network
+            astalLibs.notifd
+            astalLibs.powerprofiles
+            astalLibs.river
+            astalLibs.tray
+            astalLibs.wireplumber
           ];
-        }).overrideAttrs
-          (old: {
-            propagatedBuildInputs = (old.propagatedBuildInputs or [ ]) ++ [
-            ];
-          });
-    in
-    rec {
-      packages.${system} = {
-        default = hyprshell;
-        hyprshell = hyprshell;
-        ags = {
-          ags = agsPatched.packages.agsFull;
-          docs = agsPatched.packages.docs;
-          io = agsPatched.packages.io;
-          gjs = agsPatched.packages.gjs;
-          astal3 = agsPatched.packages.astal3;
-          astal4 = agsPatched.packages.astal4;
-          apps = agsPatched.packages.apps;
-          auth = agsPatched.packages.auth;
-          battery = agsPatched.packages.battery;
-          bluetooth = agsPatched.packages.bluetooth;
-          cava = agsPatched.packages.cava;
-          greet = agsPatched.packages.greet;
-          hyprland = agsPatched.packages.hyprland;
-          mpris = agsPatched.packages.mpris;
-          network = agsPatched.packages.network;
-          notifd = agsPatched.packages.notifd;
-          powerprofiles = agsPatched.packages.powerprofiles;
-          river = agsPatched.packages.river;
-          tray = agsPatched.packages.tray;
-          wireplumber = agsPatched.packages.wireplumber;
-        };
-      };
 
-      overlays.default = final: prev: {
-        hyprshell = hyprshell;
-        ags = {
-          ags = agsPatched.packages.agsFull;
-          docs = agsPatched.packages.docs;
-          io = agsPatched.packages.io;
-          gjs = agsPatched.packages.gjs;
-          astal3 = agsPatched.packages.astal3;
-          astal4 = agsPatched.packages.astal4;
-          apps = agsPatched.packages.apps;
-          auth = agsPatched.packages.auth;
-          battery = agsPatched.packages.battery;
-          bluetooth = agsPatched.packages.bluetooth;
-          cava = agsPatched.packages.cava;
-          greet = agsPatched.packages.greet;
-          hyprland = agsPatched.packages.hyprland;
-          mpris = agsPatched.packages.mpris;
-          network = agsPatched.packages.network;
-          notifd = agsPatched.packages.notifd;
-          powerprofiles = agsPatched.packages.powerprofiles;
-          river = agsPatched.packages.river;
-          tray = agsPatched.packages.tray;
-          wireplumber = agsPatched.packages.wireplumber;
-        };
+        installPhase = ''
+          ags bundle app.ts $out/bin/my-shell
+        '';
+
+        preFixup = ''
+          gappsWrapperArgs+=(
+            --prefix PATH : ${
+              pkgs.lib.makeBinPath ([
+              ])
+            }
+          )
+        '';
       };
+    in
+    {
+      packages.${system} = rec {
+        inherit hyprshell;
+        default = hyprshell;
+        ags = ags.packages.${system}.agsFull;
+      };
+      overlays.default =
+        final: prev:
+        let
+          astalLibs = astal.packages.${system};
+        in
+        {
+          inherit hyprshell;
+          inherit astalLibs;
+          ags = ags.packages.${system}.agsFull;
+        };
     };
 }
