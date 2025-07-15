@@ -13,6 +13,11 @@ export default function Wallpaper(gdkmonitor: Gdk.Monitor): Gtk.Widget {
             | Astal.WindowAnchor.BOTTOM
             | Astal.WindowAnchor.RIGHT}
         application={App}>
-        <box hexpand vexpand css={bind(wallpaper).as(wallpaper => `background-image: url("${wallpaper}");  background-size: cover; background-repeat: no-repeat; background-position: center;`)} />
+        <box hexpand expand css="background: #ff0000;">
+            <label label="asdfasdfasdfaskdfjaösdkfjaösdfkj" />
+            {wallpaper(path =>
+                <Gtk.Image hexpand vexpand file={path} />
+            )}
+        </box>
     </window>
 }
